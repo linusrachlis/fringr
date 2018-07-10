@@ -22,7 +22,10 @@ $crawler->filter('.performances table tbody tr')->each(
     function (Crawler $node) use (&$events, $title, $runtime_minutes) {
         $cells = $node->filter('td');
         $date = $cells->eq(1)->text();
-        $time = $cells->eq(2)->text();
+        // Filter out the '*' the Fringe website uses '*' after performance times to
+        // indicate an accessible performance.
+        // TODO indicate accessibility on the calendar too!
+        $time = preg_replace('/^.*?(\d+:\d+[ap]m).*?$/', '$1', $cells->eq(2)->text());
         $start_time = new DateTime("$date, $time");
         $end_time = (new DateTime("$date, $time"))->add(new DateInterval("PT{$runtime_minutes}M"));
         $events[] = [
