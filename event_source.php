@@ -64,6 +64,8 @@ function output_ical(array $events)
     header('Content-type: text/calendar; charset=utf8');
 
     $vCalendar = new iCal\Component\Calendar('fringr.linus.rachlis.net');
+    $vCalendar->setName($events[0]['title'] . ' - Fringe');
+    $vCalendar->setDescription($events[0]['title'] . ' - Fringe');
 
     $torontoTz = new DateTimeZone('America/Toronto');
     $utc = new DateTimeZone('UTC');
