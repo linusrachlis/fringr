@@ -61,7 +61,7 @@ function output_ical(array $events)
     global $location_name;
     global $location_address;
 
-    header('Content-type: text/plain; charset=utf8');
+    header('Content-type: text/calendar; charset=utf8');
 
     $vCalendar = new iCal\Component\Calendar('fringr.linus.rachlis.net');
 
