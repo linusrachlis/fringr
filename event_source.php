@@ -28,12 +28,13 @@ $crawler->filter('.performances table tbody tr')->each(
         $date = $cells->eq(1)->text();
         // Filter out the '*' the Fringe website uses '*' after performance times to
         // indicate an accessible performance.
-        // TODO indicate accessibility on the calendar too!
         $time = preg_replace('/^.*?(\d+:\d+[ap]m).*?$/', '$1', $cells->eq(2)->text());
+        $accessible = $cells->eq(2)->filter('.accessibility-flag')->count() > 0;
         $start_time = new DateTime("$date, $time");
         $end_time = (new DateTime("$date, $time"))->add(new DateInterval("PT{$runtime_minutes}M"));
+        $title_display = $accessible ? "$title (accessible)" : $title;
         $events[] = [
-            'title' => $title,
+            'title' => $title_display,
             'start' => $start_time->format('c'),
             'end' => $end_time->format('c'),
         ];
