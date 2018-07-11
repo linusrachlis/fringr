@@ -13,8 +13,16 @@
 </head>
 
 <body>
-    <textarea id=my-list placeholder="Paste play URLs here, one per line" rows=10 cols=100></textarea>
-    <button id=refresh-button>Refresh</button>
+    <div>
+        <textarea id=my-list placeholder="Paste play URLs here, one per line" rows=10 cols=100></textarea>
+        <button id=refresh-button>Refresh</button>
+    </div>
+    <div>
+        <p id=feed-urls-message style="display:none">
+            Add these URLs as calendar feeds to show this on your own calendar:
+        </p>
+        <div id=feed-urls></div>
+    </div>
 
     <div id=calendar></div>
 
@@ -22,6 +30,17 @@
         $(function () {
             $('#calendar').fullCalendar({
                 defaultView: 'agendaWeek',
+            });
+
+            const $feedUrlsContainer = $('#feed-urls');
+            const $feedUrlsMessage = $('#feed-urls-message');
+
+            $feedUrlsContainer.on('focus', 'input', function () {
+                this.select();
+            });
+            $feedUrlsContainer.on('click', 'button.copy', function () {
+                const urlToCopy = $(this).parent().children('input').val();
+                copyToClipboard(urlToCopy);
             });
 
             const calendar = $('#calendar').fullCalendar('getCalendar');
@@ -55,10 +74,15 @@
             ];
 
             $('#refresh-button').click(function () {
-                calendar.removeEventSources();
                 let colourIndex = 0;
                 const urlsValue = $('#my-list').val();
+                if (urlsValue.length == 0) return;
                 const urls = urlsValue.split(/\s+/);
+
+                calendar.removeEventSources();
+                $feedUrlsContainer.empty();
+                $feedUrlsMessage.toggle(urls.length > 0);
+
                 for (let i = 0; i < urls.length; i++) {
                     const playUrlEncoded = encodeURIComponent(urls[i]);
                     const eventSourceUrl = 'event_source.php?play_url=' + playUrlEncoded;
@@ -66,9 +90,31 @@
                     colourIndex = (colourIndex + 1) % colours.length;
                     const eventSource = Object.assign({}, colour, {url: eventSourceUrl});
                     calendar.addEventSource(eventSource);
+
+                    const feedUrl =
+                        'https://linus.rachlis.net/fringr/event_source.php?play_url=' +
+                        playUrlEncoded + '&format=ical';
+                    const $feedUrlInput = $('<input type=text size=100 readonly>').val(feedUrl);
+                    const $feedUrlInputContainer = $('<div>')
+                        .append($feedUrlInput)
+                        .append('<button class=copy>Copy</button>');
+                    $feedUrlsContainer.append($feedUrlInputContainer);
                 }
             });
+
+            const copyToClipboard = str => {
+              const el = document.createElement('textarea');
+              el.value = str;
+              el.setAttribute('readonly', '');
+              el.style.position = 'absolute';
+              el.style.left = '-9999px';
+              document.body.appendChild(el);
+              el.select();
+              document.execCommand('copy');
+              document.body.removeChild(el);
+            };
         });
+
     </script>
 </body>
 
