@@ -90,28 +90,7 @@ function output_ical(array $events)
             ;
 
         $vCalendar->addComponent($vEvent);
-
-        // echo "BEGIN:VEVENT\n";
-        // $title_safe = str_replace(["\n", "\r"], ' ', $event['title']);
-        // echo "SUMMARY:$title_safe\n";
-        // $uid = sha1($event['title']) . '_' . strtotime($event['start']) . '@fringr.linus.rachlis.net';
-        // echo "UID:$uid\n";
-        // echo "DTSTART:$event[start]\n";
-        // echo "DTEND:$event[end]\n";
-        // $location_safe = str_replace(["\n", "\r"], ' ', "$location_name, $location_address");
-        // echo "LOCATION:$location_safe\n";
-        // echo "END:VEVENT\n";
-        // echo "\n";
-        // echo "\n";
-        // echo "\n";
-        // echo "\n";
-        // echo "\n";
-        // echo "\n";
-        // echo "\n";
-        // echo "\n";
     }
-
-    // echo "END:VCALENDAR\n";
 
     echo $vCalendar->render();
 }
