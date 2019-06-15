@@ -41,24 +41,47 @@ $location_address = strip_tags($location_address);
 $events = [];
 $timezone = new DateTimeZone('America/Toronto');
 
+$flags = [
+    '.warning-icon-assisted-hearing-devices' => '👂',
+    '.warning-icon-audio-description' => '💬',
+    '.warning-icon-relaxed-performance' => '🤗',
+    '.warning-icon-sign-language' => '👌',
+    '.warning-icon-tad-seating' => '📳',
+    '.warning-icon-touch-book' => '📖',
+    '.warning-icon-touch-tour' => '🖐',
+];
+$all_flags_selector = implode(',', array_keys($flags));
+
 $crawler->filter('.performances table tbody tr')->each(
-    function (Crawler $node) use (&$events, $title, $runtime_minutes, $location_name, $location_address) {
+    function (Crawler $node) use (
+        &$events,
+        $title,
+        $runtime_minutes,
+        $location_name,
+        $location_address,
+        &$flags,
+        $all_flags_selector
+    ) {
         $cells = $node->filter('td');
         $date = $cells->eq(1)->text();
 
-
-        // Filter out the '*' the Fringe website uses '*' after performance times to
-        // indicate an accessible performance.
-        // $accessible = $cells->eq(3)->filter('.accessibility-flag')->count() > 0;
-        // TODO update for 2019's more detailed a11y flags.
-        // "level of physical access" is on venue, but other flags are show-level.
-
+        $perf_flag_symbols = [];
+        $perf_flags = $cells->eq(3)->filter($all_flags_selector)->each(
+            function (Crawler $node) use (&$flags, &$perf_flag_symbols)
+            {
+                $lookup = '.' . $node->attr('class');
+                if (array_key_exists($lookup, $flags)) {
+                    $perf_flag_symbols[] = $flags[$lookup];
+                }
+            }
+        );
+        $perf_flags_string = implode(' ', $perf_flag_symbols);
 
         $time = preg_replace('/^.*?(\d+:\d+[ap]m).*?$/', '$1', $cells->eq(2)->text());
         $start_time = new DateTime("$date, $time", $timezone);
         $end_time = (new DateTime("$date, $time", $timezone))->add(new DateInterval("PT{$runtime_minutes}M"));
         $events[] = [
-            'title' => "$title @ $location_name, $location_address",
+            'title' => trim("$perf_flags_string $title @ $location_name, $location_address"),
             'start' => $start_time->format('c'),
             'end' => $end_time->format('c'),
             'url' => $_GET['play_url'],
