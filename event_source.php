@@ -28,16 +28,21 @@ $crawler = $client->request('GET', $_GET['play_url']);
 $title = trim($crawler->filter('.page-title')->text());
 $runtime_text = $crawler->filter('.show-info')->first()->filter('.column.right dd')->text();
 $runtime_minutes = preg_replace('/^(\d+)m$/', '$1', $runtime_text);
+
 $location_address_node = $crawler->filter('address.venue-address');
+
 $location_name = $location_address_node->previousAll()->text();
+$location_name = preg_replace('@^\s*\d+\s*:\s*(.+)$@', '$1', $location_name);
+
 $location_address_html = $location_address_node->html();
 $location_address = preg_replace('@<br( /)?>@', ', ', $location_address_html);
+$location_address = strip_tags($location_address);
 
 $events = [];
 $timezone = new DateTimeZone('America/Toronto');
 
 $crawler->filter('.performances table tbody tr')->each(
-    function (Crawler $node) use (&$events, $title, $runtime_minutes) {
+    function (Crawler $node) use (&$events, $title, $runtime_minutes, $location_name, $location_address) {
         $cells = $node->filter('td');
         $date = $cells->eq(1)->text();
 
@@ -53,7 +58,7 @@ $crawler->filter('.performances table tbody tr')->each(
         $start_time = new DateTime("$date, $time", $timezone);
         $end_time = (new DateTime("$date, $time"))->add(new DateInterval("PT{$runtime_minutes}M"));
         $events[] = [
-            'title' => $title,
+            'title' => "$title @ $location_name, $location_address",
             'start' => $start_time->format('c'),
             'end' => $end_time->format('c'),
         ];
