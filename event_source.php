@@ -56,7 +56,7 @@ $crawler->filter('.performances table tbody tr')->each(
 
         $time = preg_replace('/^.*?(\d+:\d+[ap]m).*?$/', '$1', $cells->eq(2)->text());
         $start_time = new DateTime("$date, $time", $timezone);
-        $end_time = (new DateTime("$date, $time"))->add(new DateInterval("PT{$runtime_minutes}M"));
+        $end_time = (new DateTime("$date, $time", $timezone))->add(new DateInterval("PT{$runtime_minutes}M"));
         $events[] = [
             'title' => "$title @ $location_name, $location_address",
             'start' => $start_time->format('c'),
@@ -93,14 +93,13 @@ function output_ical(array $events)
     $vCalendar->setName($events[0]['title'] . ' - Fringe');
     $vCalendar->setDescription($events[0]['title'] . ' - Fringe');
 
-    $torontoTz = new DateTimeZone('America/Toronto');
     $utc = new DateTimeZone('UTC');
 
     foreach ($events as $event)
     {
-        $dtStart = new DateTime($event['start'], $torontoTz);
+        $dtStart = new DateTime($event['start'], $timezone);
         $dtStart->setTimezone($utc);
-        $dtEnd = new DateTime($event['end'], $torontoTz);
+        $dtEnd = new DateTime($event['end'], $timezone);
         $dtEnd->setTimezone($utc);
 
         $uid = sha1($event['title']) . '_' . strtotime($event['start']) . '@fringr.linus.rachlis.net';
