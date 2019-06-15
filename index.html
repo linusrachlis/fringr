@@ -178,6 +178,11 @@
                 if (urlsValue.length == 0) return;
                 const urls = urlsValue.split(/\s+/);
 
+                if (urls.length > 25) {
+                    alert("Please enter 25 plays or less for a usable experience.");
+                    return;
+                }
+
                 calendar.removeEventSources();
                 $feedUrlsContainer.empty();
                 $feedUrlsMessage.toggle(urls.length > 0);
