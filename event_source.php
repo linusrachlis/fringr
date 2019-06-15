@@ -8,7 +8,7 @@ require 'vendor/autoload.php';
 date_default_timezone_set('America/Toronto');
 
 assert(isset($_GET['play_url']));
-$url_prefix = 'https://fringetoronto.com/festivals/fringe/event/';
+$url_prefix = 'https://fringetoronto.com/fringe/show/';
 assert(substr($_GET['play_url'], 0, strlen($url_prefix)) == $url_prefix);
 
 $client = new Client();
@@ -17,24 +17,32 @@ $crawler = $client->request('GET', $_GET['play_url']);
 $title = trim($crawler->filter('.page-title')->text());
 $runtime_text = $crawler->filter('.show-info')->first()->filter('.column.right dd')->text();
 $runtime_minutes = preg_replace('/^(\d+)m$/', '$1', $runtime_text);
-$location_name = $crawler->filter('.show-info > h3')->text();
-$location_address_html = $crawler->filter('.show-info > address')->html();
+$location_address_node = $crawler->filter('address.venue-address');
+$location_name = $location_address_node->previousAll()->text();
+$location_address_html = $location_address_node->html();
 $location_address = preg_replace('@<br( /)?>@', ', ', $location_address_html);
 
 $events = [];
+$timezone = new DateTimeZone('America/Toronto');
+
 $crawler->filter('.performances table tbody tr')->each(
     function (Crawler $node) use (&$events, $title, $runtime_minutes) {
         $cells = $node->filter('td');
         $date = $cells->eq(1)->text();
+
+
         // Filter out the '*' the Fringe website uses '*' after performance times to
         // indicate an accessible performance.
+        // $accessible = $cells->eq(3)->filter('.accessibility-flag')->count() > 0;
+        // TODO update for 2019's more detailed a11y flags.
+        // "level of physical access" is on venue, but other flags are show-level.
+
+
         $time = preg_replace('/^.*?(\d+:\d+[ap]m).*?$/', '$1', $cells->eq(2)->text());
-        $accessible = $cells->eq(2)->filter('.accessibility-flag')->count() > 0;
-        $start_time = new DateTime("$date, $time");
+        $start_time = new DateTime("$date, $time", $timezone);
         $end_time = (new DateTime("$date, $time"))->add(new DateInterval("PT{$runtime_minutes}M"));
-        $title_display = $accessible ? "$title (accessible)" : $title;
         $events[] = [
-            'title' => $title_display,
+            'title' => $title,
             'start' => $start_time->format('c'),
             'end' => $end_time->format('c'),
         ];
