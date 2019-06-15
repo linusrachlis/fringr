@@ -28,12 +28,6 @@
         <textarea id=my-list placeholder="Paste play URLs here, one per line" rows=10 cols=100></textarea>
         <button id=refresh-button>Refresh</button>
     </div>
-    <div>
-        <p id=feed-urls-message style="display:none">
-            Add these URLs as calendar feeds to show this on your own calendar:
-        </p>
-        <div id=feed-urls></div>
-    </div>
 
     <p><a href="#accessibility-key">Performance Accessibility Key</a></p>
 
@@ -76,6 +70,15 @@
         <li><a href="https://fringetoronto.com/accessibility/assisted-performances">Fringe Toronto - Assisted Performances</a> (defines some of the above terms)</li>
         <li><a href="https://fringetoronto.com/accessibility/manifesto">Fringe Toronto - Accessibility Manifesto</a></li>
     </ul>
+
+    <h2>Calendar Feeds</h2>
+
+    <div>
+        <p id=feed-urls-message style="display:none">
+            Add these URLs as calendar feeds to show this on your own calendar:
+        </p>
+        <div id=feed-urls></div>
+    </div>
 
     <script>
         $(function () {
