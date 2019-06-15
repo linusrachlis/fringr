@@ -4,19 +4,75 @@
 <head>
     <title>Fringr</title>
     <meta charset=utf8>
+    <meta name=description content="An easier way to Fringe more. Put all your picks on the same calendar and make a plan.">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+
+    <style>
+        #refresh-button:disabled {
+            background-color: yellow;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
+    <p>An easier way to Fringe more. Put all your picks on the same calendar and make a plan.</p>
+
     <div>
         <textarea id=my-list placeholder="Paste play URLs here, one per line" rows=10 cols=100></textarea>
         <button id=refresh-button>Refresh</button>
     </div>
+
+    <p><a href="#accessibility-key">Performance Accessibility Key</a></p>
+
+    <div id=calendar></div>
+
+    <p>
+        👁 = preview performance
+    </p>
+
+    <h2 id="accessibility-key">Accessibility Info</h2>
+
+    <p>The Fringe website indicates that certain performances have features not present at other performances of the same play. To find out about accessibility of the venue itself, please check the play's page on the Fringe website (click any calendar item).</p>
+
+    <dl>
+        <dt>👂</dt>
+        <dd>Assisted Hearing Devices</dd>
+
+        <dt>💬</dt>
+        <dd>Audio Description</dd>
+
+        <dt>🤗</dt>
+        <dd>Relaxed Performance</dd>
+
+        <dt>👌</dt>
+        <dd>Sign Language</dd>
+
+        <dt>📳</dt>
+        <dd>TAD Seating</dd>
+
+        <dt>📖</dt>
+        <dd>Touch Book</dd>
+
+        <dt>🖐</dt>
+        <dd>Touch Tour</dd>
+    </dl>
+
+    <p>See also:</p>
+
+    <ul>
+        <li><a href="https://fringetoronto.com/accessibility/assisted-performances">Fringe Toronto - Assisted Performances</a> (defines some of the above terms)</li>
+        <li><a href="https://fringetoronto.com/accessibility/manifesto">Fringe Toronto - Accessibility Manifesto</a></li>
+    </ul>
+
+    <h2>Calendar Feeds</h2>
+
     <div>
         <p id=feed-urls-message style="display:none">
             Add these URLs as calendar feeds to show this on your own calendar:
@@ -24,12 +80,19 @@
         <div id=feed-urls></div>
     </div>
 
-    <div id=calendar></div>
-
     <script>
         $(function () {
+            const refreshButton = $('#refresh-button');
+
             $('#calendar').fullCalendar({
                 defaultView: 'agendaWeek',
+                loading: isLoading => {
+                    if (isLoading) {
+                        refreshButton.attr('disabled', true).text('Loading, please wait...');
+                    } else {
+                        refreshButton.removeAttr('disabled').text('Refresh');
+                    }
+                },
             });
 
             const $feedUrlsContainer = $('#feed-urls');
@@ -47,37 +110,102 @@
 
             const colours = [
                 {
-                    color: '#ff0000',
-                    textColor: 'black',
-                },
-                {
-                    color: '#00ff00',
-                    textColor: 'black',
-                },
-                {
-                    color: '#0000ff',
+                    color: 'maroon',
                     textColor: 'white',
+                    borderColor: 'white',
                 },
                 {
-                    color: '#ffff00',
+                    color: 'red',
                     textColor: 'black',
+                    borderColor: 'black',
                 },
                 {
-                    color: '#00ffff',
+                    color: 'orange',
                     textColor: 'black',
+                    borderColor: 'black',
                 },
                 {
-                    color: '#ff00ff',
+                    color: 'yellow',
                     textColor: 'black',
+                    borderColor: 'black',
                 },
-                // TODO add more colours
+                {
+                    color: 'olive',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'green',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'purple',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'fuchsia',
+                    textColor: 'black',
+                    borderColor: 'black',
+                },
+                {
+                    color: 'lime',
+                    textColor: 'black',
+                    borderColor: 'black',
+                },
+                {
+                    color: 'teal',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'aqua',
+                    textColor: 'black',
+                    borderColor: 'black',
+                },
+                {
+                    color: 'blue',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'navy',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'black',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'gray',
+                    textColor: 'white',
+                    borderColor: 'white',
+                },
+                {
+                    color: 'silver',
+                    textColor: 'black',
+                    borderColor: 'black',
+                },
+                {
+                    color: 'white',
+                    textColor: 'black',
+                    borderColor: 'black',
+                },
             ];
 
-            $('#refresh-button').click(function () {
+            refreshButton.click(function () {
                 let colourIndex = 0;
-                const urlsValue = $('#my-list').val();
+                const urlsValue = $('#my-list').val().trim();
                 if (urlsValue.length == 0) return;
                 const urls = urlsValue.split(/\s+/);
+
+                if (urls.length > 25) {
+                    alert("Please enter 25 plays or less for a usable experience.");
+                    return;
+                }
 
                 calendar.removeEventSources();
                 $feedUrlsContainer.empty();
