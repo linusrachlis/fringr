@@ -6,7 +6,7 @@ use Eluceo\iCal;
 
 require 'vendor/autoload.php';
 date_default_timezone_set('America/Toronto');
-$url_prefix = 'https://fringetoronto.com/fringe/show/';
+$url_regex = '@^https://fringetoronto\.com/fringe/(show|kidsfest)/[^/]+$@';
 
 if (
     !isset($_GET['play_url']) ||
@@ -15,10 +15,7 @@ if (
 {
     header('HTTP/1.1 400 Bad Request');
     header('Content-type: application/json');
-    echo json_encode([
-        'message' =>
-            "play_url param is required and must begin with " . var_export($url_prefix, true)
-    ]);
+    echo json_encode(['message' => 'play_url was missing or invalid']);
     exit;
 }
 
