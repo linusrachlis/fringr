@@ -11,6 +11,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+
+    <style>
+        #refresh-button:disabled {
+            background-color: yellow;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
@@ -71,8 +79,17 @@
 
     <script>
         $(function () {
+            const refreshButton = $('#refresh-button');
+
             $('#calendar').fullCalendar({
                 defaultView: 'agendaWeek',
+                loading: isLoading => {
+                    if (isLoading) {
+                        refreshButton.attr('disabled', true).text('Loading, please wait...');
+                    } else {
+                        refreshButton.removeAttr('disabled').text('Refresh');
+                    }
+                },
             });
 
             const $feedUrlsContainer = $('#feed-urls');
@@ -176,7 +193,7 @@
                 },
             ];
 
-            $('#refresh-button').click(function () {
+            refreshButton.click(function () {
                 let colourIndex = 0;
                 const urlsValue = $('#my-list').val().trim();
                 if (urlsValue.length == 0) return;
