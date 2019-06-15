@@ -61,6 +61,7 @@ $crawler->filter('.performances table tbody tr')->each(
             'title' => "$title @ $location_name, $location_address",
             'start' => $start_time->format('c'),
             'end' => $end_time->format('c'),
+            'url' => $_GET['play_url'],
         ];
     }
 );
