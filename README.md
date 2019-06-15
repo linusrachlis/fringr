@@ -12,7 +12,6 @@
 
 # TODO
 
-* don't use assertions for input checking! 😠
 * click a performance to make it the selected one for the play. the others go dim.
     - export selected performances to .ics file
     - encode this into the value of the textarea so you can restore the state via copy/paste
