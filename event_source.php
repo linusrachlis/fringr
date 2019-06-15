@@ -6,10 +6,21 @@ use Eluceo\iCal;
 
 require 'vendor/autoload.php';
 date_default_timezone_set('America/Toronto');
-
-assert(isset($_GET['play_url']));
 $url_prefix = 'https://fringetoronto.com/fringe/show/';
-assert(substr($_GET['play_url'], 0, strlen($url_prefix)) == $url_prefix);
+
+if (
+    !isset($_GET['play_url']) ||
+    substr($_GET['play_url'], 0, strlen($url_prefix)) != $url_prefix
+)
+{
+    header('HTTP/1.1 400 Bad Request');
+    header('Content-type: application/json');
+    echo json_encode([
+        'message' =>
+            "play_url param is required and must begin with " . var_export($url_prefix, true)
+    ]);
+    exit;
+}
 
 $client = new Client();
 $crawler = $client->request('GET', $_GET['play_url']);

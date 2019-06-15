@@ -75,7 +75,7 @@
 
             $('#refresh-button').click(function () {
                 let colourIndex = 0;
-                const urlsValue = $('#my-list').val();
+                const urlsValue = $('#my-list').val().trim();
                 if (urlsValue.length == 0) return;
                 const urls = urlsValue.split(/\s+/);
 
