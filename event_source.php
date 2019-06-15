@@ -72,11 +72,16 @@ $crawler->filter('.performances table tbody tr')->each(
                 }
             }
         );
-        $perf_flags_string = implode(' ', $perf_flag_symbols);
+
+        // Preview symbol is presented differently on Fringe site
+        if ($cells->eq(0)->filter('.icon-preview')->count() == 1) {
+            $perf_flag_symbols[] = '👁';
+        }
 
         $time = preg_replace('/^.*?(\d+:\d+[ap]m).*?$/', '$1', $cells->eq(2)->text());
         $start_time = new DateTime("$date, $time", $timezone);
         $end_time = (new DateTime("$date, $time", $timezone))->add(new DateInterval("PT{$runtime_minutes}M"));
+        $perf_flags_string = implode(' ', $perf_flag_symbols);
         $events[] = [
             'title' => trim("$perf_flags_string $title @ $location_name, $location_address"),
             'start' => $start_time->format('c'),
