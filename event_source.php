@@ -34,7 +34,7 @@ $location_address_node = $crawler->filter('address.venue-address');
 $location_name = $location_address_node->previousAll()->text();
 $location_name = preg_replace('@^\s*\d+\s*:\s*(.+)$@', '$1', $location_name);
 
-$location_address_html = $location_address_node->html();
+$location_address_html = $location_address_node->filter('p:first-child')->html();
 $location_address = preg_replace('@<br( /)?>@', ', ', $location_address_html);
 $location_address = strip_tags($location_address);
 
