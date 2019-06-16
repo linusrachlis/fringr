@@ -19,3 +19,4 @@
 * provide month view option
 * know if a show is sold out (sub-request to 'tickets' button, will take longer)
 * show a map in a popup from clicking showtime in calendar
+* time filter
