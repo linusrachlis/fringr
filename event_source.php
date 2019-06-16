@@ -10,7 +10,7 @@ $url_regex = '@^https://fringetoronto\.com/fringe/(show|kidsfest)/[^/]+$@';
 
 if (
     !isset($_GET['play_url']) ||
-    substr($_GET['play_url'], 0, strlen($url_prefix)) != $url_prefix
+    !preg_match($url_regex, $_GET['play_url'])
 )
 {
     header('HTTP/1.1 400 Bad Request');
